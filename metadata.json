@@ -1,0 +1,6 @@
+{
+  "name": "Visual Fraction Addition",
+  "description": "An educational application to visually demonstrate the addition of two fractions by transforming them into equivalent fractions with a common denominator, represented by grids using D3.js.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}

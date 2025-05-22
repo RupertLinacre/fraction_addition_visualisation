@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visual Fraction Addition</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css"
+    integrity="sha384-wcIxkf4k558AjM3Yz3BBFQUbk/zgIYC2R0QpeeYb+TwlBVMrlgLqwRjRtGZiK7ww" crossorigin="anonymous">
+  <style>
+    /* Custom styles for D3 transitions if needed, or for global page style */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Ensure svgs are not overly large by default if container is small */
+    svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .katex-display {
+      /* Ensure KaTeX display mode doesn't introduce unwanted margins */
+      margin: 0;
+    }
+
+    .katex {
+      /* Adjust font size for KaTeX if needed globally */
+      font-size: 1.1em;
+      /* Example: make KaTeX slightly larger */
+    }
+  </style>
+
+</head>
+
+<body class="bg-slate-50 text-slate-800">
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+
+</html>
