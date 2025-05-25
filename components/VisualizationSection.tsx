@@ -132,14 +132,14 @@ export const VisualizationSection: React.FC<VisualizationSectionProps> = ({ calc
     cols: f1.den, rows: 1,
     shadingSegments: [{ count: f1.num, color: FRACTION1_COLOR, id: "f1init" }],
     isColumnBasedShading: true, showCellNumbers: true, rotationAngle: 0,
-    numberingOrder: 'ltr-ttb', cellNumberingDenominator: f1.den,
+    numberingOrder: 'ttb-ltr', cellNumberingDenominator: f1.den,
   };
   const f2aVisualProps: VisualUnitProps['visualProps'] = {
     idSuffix: "f2a",
     cols: f2.den, rows: 1,
     shadingSegments: [{ count: f2.num, color: FRACTION2_COLOR, id: "f2init" }],
     isColumnBasedShading: true, showCellNumbers: true, rotationAngle: 0,
-    numberingOrder: 'ltr-ttb', cellNumberingDenominator: f2.den,
+    numberingOrder: 'ttb-ltr', cellNumberingDenominator: f2.den,
   };
 
   const f1bVisualProps: VisualUnitProps['visualProps'] = {
@@ -147,14 +147,14 @@ export const VisualizationSection: React.FC<VisualizationSectionProps> = ({ calc
     cols: f1.den, rows: f2.den,
     shadingSegments: [{ count: f1.num, color: FRACTION1_COLOR, id: "f1transformed" }],
     isColumnBasedShading: true, showCellNumbers: true, rotationAngle: rotationF1,
-    numberingOrder: 'ltr-ttb', cellNumberingDenominator: commonDenominator,
+    numberingOrder: 'ttb-ltr', cellNumberingDenominator: commonDenominator,
   };
   const f2bVisualProps: VisualUnitProps['visualProps'] = {
     idSuffix: "f2b",
     cols: f2.den, rows: f1.den,
     shadingSegments: [{ count: f2.num, color: FRACTION2_COLOR, id: "f2transformed" }],
     isColumnBasedShading: true, showCellNumbers: true, rotationAngle: rotationF2,
-    numberingOrder: 'ltr-ttb', cellNumberingDenominator: commonDenominator,
+    numberingOrder: 'ttb-ltr', cellNumberingDenominator: commonDenominator,
   };
 
   const sumVisualProps: VisualUnitProps['visualProps'] = {
