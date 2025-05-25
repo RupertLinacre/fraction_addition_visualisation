@@ -10,10 +10,12 @@ interface KatexDisplayProps {
 }
 
 const KatexDisplay: React.FC<KatexDisplayProps> = ({ latex, block = false, className = "" }) => {
-  const containerRef = useRef<HTMLElement>(null); // Use HTMLElement as it's a common base
+  // Fix: Use separate, correctly typed refs for div and span elements
+  const divRef = useRef<HTMLDivElement>(null);
+  const spanRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const currentContainer = containerRef.current;
+    const currentContainer = block ? divRef.current : spanRef.current;
     if (currentContainer) {
       // For debugging in a live environment, one could log:
       // console.log("KatexDisplay - document.compatMode:", document.compatMode);
@@ -35,11 +37,9 @@ const KatexDisplay: React.FC<KatexDisplayProps> = ({ latex, block = false, class
 
   // The ref is of type HTMLElement, which is compatible with both HTMLDivElement and HTMLSpanElement
   if (block) {
-    // Fix: Use type assertion for the ref prop to match specific HTML element type HTMLDivElement.
-    return <div ref={containerRef as React.RefObject<HTMLDivElement>} className={className} />;
+    return <div ref={divRef} className={className} />;
   }
-  // Fix: Use type assertion for the ref prop to match specific HTML element type HTMLSpanElement.
-  return <span ref={containerRef as React.RefObject<HTMLSpanElement>} className={className} />;
+  return <span ref={spanRef} className={className} />;
 };
 
 export default KatexDisplay;

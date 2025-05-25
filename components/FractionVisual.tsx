@@ -15,6 +15,13 @@ import {
 
 const ANIMATION_DURATION = 1000; // Animation duration in ms
 
+// Define CellMeta directly in this file if it's only used here or for clarity
+type CellMeta = { 
+  x: number; y: number; // Top-left of cell relative to mainGroup's centered origin
+  colIdx: number; rowIdx: number; 
+  logicalCellIdx: number; // This is always (rowIdx * logicalCols + colIdx)
+};
+
 const FractionVisual: React.FC<FractionVisualProps> = ({
   idSuffix,
   baseWidth,
@@ -43,15 +50,12 @@ const FractionVisual: React.FC<FractionVisualProps> = ({
     svg.attr('width', DIAGONAL)
        .attr('height', DIAGONAL)
        .attr('viewBox', `0 0 ${DIAGONAL} ${DIAGONAL}`)
-       .style('overflow', 'visible'); // Ensure content isn't clipped if it somehow exceeds DIAGONAL, though it shouldn't
+       .style('overflow', 'visible'); 
 
-    // This group is static, establishes the center point of the SVG as (0,0) for its children
     const canvasGroup = svg.append("g")
       .attr("id", `canvas-group-${idSuffix}`)
       .attr("transform", `translate(${DIAGONAL / 2}, ${DIAGONAL / 2})`);
 
-    // This group contains the visual square and will be rotated.
-    // It's drawn centered around canvasGroup's origin.
     const mainGroup = canvasGroup.append("g").attr("id", `fraction-group-${idSuffix}`);
     
     const actualCellWidth = baseWidth / logicalCols;
@@ -59,11 +63,8 @@ const FractionVisual: React.FC<FractionVisualProps> = ({
 
     const fromAngle = initialRenderRef.current ? rotationAngle : prevRotationAngleRef.current;
     
-    // Initial transform for mainGroup (content group)
-    // Rotation happens around (0,0) because it's already centered by canvasGroup's translation
     mainGroup.attr("transform", `rotate(${fromAngle}, 0, 0)`);
 
-    // Animate main group rotation if angle changes
     if (fromAngle !== rotationAngle && !initialRenderRef.current) {
       mainGroup.transition()
         .duration(ANIMATION_DURATION)
@@ -71,7 +72,6 @@ const FractionVisual: React.FC<FractionVisualProps> = ({
         .attr("transform", `rotate(${rotationAngle}, 0, 0)`);
     }
 
-    // Border for the entire grid - drawn centered around mainGroup's (0,0)
     mainGroup.append("rect")
       .attr("x", -baseWidth / 2)
       .attr("y", -baseHeight / 2)
@@ -81,10 +81,6 @@ const FractionVisual: React.FC<FractionVisualProps> = ({
       .attr("stroke", BORDER_COLOR)
       .attr("stroke-width", 2);
 
-    type CellMeta = { 
-      x: number; y: number; // Top-left of cell relative to mainGroup's centered origin
-      colIdx: number; rowIdx: number; logicalCellIdx: number 
-    };
     const cellData: Array<CellMeta> = [];
     const gridTopLeftX = -baseWidth / 2;
     const gridTopLeftY = -baseHeight / 2;
@@ -106,16 +102,31 @@ const FractionVisual: React.FC<FractionVisualProps> = ({
       segments: ShadingSegment[],
     ): string => {
       if (!segments || segments.length === 0) return "transparent";
+      
       if (isColumnBasedShading) {
-        const segment = segments[0]; 
-        const originalColsToShade = segment.count;
-        if (dataCell.colIdx < originalColsToShade) {
+        // This logic assumes segment.count refers to the number of full columns (or rows if rotated)
+        // to shade from the 'start' of the grid.
+        const segment = segments[0]; // Typically one segment for this mode
+        const colsToShade = segment.count; 
+        // This is comparing against logical column index, before any rotation.
+        if (dataCell.colIdx < colsToShade) { 
           return segment.color;
         }
-      } else { 
+      } else { // Sequential shading based on cell order defined by `numberingOrder`
         let cumulativeShadedCells = 0;
+        let currentCellOrderIndex: number;
+
+        if (numberingOrder === 'ttb-ltr') {
+          // Order: (0,0), (1,0)...(R-1,0), then (0,1), (1,1)...(R-1,1), ...
+          currentCellOrderIndex = dataCell.colIdx * logicalRows + dataCell.rowIdx;
+        } else { // Default 'ltr-ttb'
+          // Order: (0,0), (0,1)...(0,C-1), then (1,0), (1,1)...(1,C-1), ...
+          // dataCell.logicalCellIdx is already r * C + c
+          currentCellOrderIndex = dataCell.logicalCellIdx;
+        }
+        
         for (const segment of segments) {
-          if (dataCell.logicalCellIdx >= cumulativeShadedCells && dataCell.logicalCellIdx < cumulativeShadedCells + segment.count) {
+          if (currentCellOrderIndex >= cumulativeShadedCells && currentCellOrderIndex < cumulativeShadedCells + segment.count) {
             return segment.color;
           }
           cumulativeShadedCells += segment.count;
@@ -197,9 +208,10 @@ const FractionVisual: React.FC<FractionVisualProps> = ({
                   .style("font-size", CELL_NUMBER_FONT_SIZE)
                   .text(() => {
                       let cellDisplayNumber: number;
+                      // This numberingOrder is for TEXT display, distinct from shading order
                       if (numberingOrder === 'ttb-ltr') {
                           cellDisplayNumber = d.colIdx * logicalRows + d.rowIdx + 1;
-                      } else { 
+                      } else { // 'ltr-ttb'
                           cellDisplayNumber = d.rowIdx * logicalCols + d.colIdx + 1;
                       }
                       if (cellNumberingDenominator && cellNumberingDenominator > 0) {
@@ -225,7 +237,6 @@ const FractionVisual: React.FC<FractionVisualProps> = ({
     isColumnBasedShading, showCellNumbers, rotationAngle, numberingOrder, cellNumberingDenominator
   ]);
 
-  // D3 will set width, height, viewBox. Parent div controls layout size.
   return (
     <svg ref={svgRef}></svg>
   );

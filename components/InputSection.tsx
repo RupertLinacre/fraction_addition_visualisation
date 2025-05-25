@@ -7,31 +7,33 @@ interface InputSectionProps {
   fraction1: FractionInput;
   fraction2: FractionInput;
   onFractionChange: (id: 'f1' | 'f2', field: 'num' | 'den', value: string) => void;
-  onSubmit: () => void;
-  onReset: () => void;
   errors: { f1Num?: string; f1Den?: string; f2Num?: string; f2Den?: string; general?: string };
-  isCalculating: boolean;
+  isCalculating: boolean; 
 }
 
+// InputField component is simplified: internal label element is removed.
+// It now relies on an external label or aria-label for accessibility.
 const InputField: React.FC<{
   id: string;
   value: string;
   onChange: (value: string) => void;
-  label: string;
   error?: string;
   placeholder?: string;
-}> = ({ id, value, onChange, label, error, placeholder }) => (
-  <div className="flex flex-col items-center">
-    <label htmlFor={id} className={`text-sm font-medium ${error ? `text-[${ERROR_COLOR}]` : `text-[${TEXT_COLOR_DARK}]`}`}>{label}</label>
+  ariaLabel: string; // For accessibility, as internal label is removed
+}> = ({ id, value, onChange, error, placeholder, ariaLabel }) => (
+  <div className="flex flex-col items-center"> {/* This div helps center the input and its error message */}
     <input
       id={id}
       type="number"
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder || "0"}
-      className={`mt-1 w-20 p-2 text-center bg-white text-slate-900 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${error ? 'border-red-500' : 'border-gray-300'}`}
+      className={`w-20 p-2 text-center bg-white text-slate-900 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${error ? 'border-red-500' : 'border-gray-300'}`}
+      aria-invalid={!!error}
+      aria-describedby={error ? `${id}-error` : undefined}
+      aria-label={ariaLabel}
     />
-    {error && <p className={`mt-1 text-xs text-[${ERROR_COLOR}]`}>{error}</p>}
+    {error && <p id={`${id}-error`} className={`mt-1 text-xs text-[${ERROR_COLOR}] w-20 text-center`}>{error}</p>}
   </div>
 );
 
@@ -39,57 +41,69 @@ export const InputSection: React.FC<InputSectionProps> = ({
   fraction1,
   fraction2,
   onFractionChange,
-  onSubmit,
-  onReset,
   errors,
-  isCalculating
+  isCalculating 
 }) => {
   return (
-    <div className="w-full max-w-2xl mx-auto p-6 bg-white rounded-xl shadow-lg">
-      <h2 className={`text-2xl font-semibold text-center mb-6 text-[${TEXT_COLOR_DARK}]`}>Enter Fractions</h2>
+    <div className="w-full max-w-md mx-auto p-6 bg-white rounded-xl shadow-lg"> {/* Adjusted max-width */}
       
       {errors.general && (
-        <div className={`mb-4 p-3 bg-red-100 border border-[${ERROR_COLOR}] text-[${ERROR_COLOR}] rounded-md text-sm`}>
+        <div role="alert" className={`mb-4 p-3 bg-red-100 border border-[${ERROR_COLOR}] text-[${ERROR_COLOR}] rounded-md text-sm`}>
           {errors.general}
         </div>
       )}
 
-      <div className="flex items-start justify-center space-x-8">
-        {/* Fraction 1 */}
-        <div className="flex flex-col items-center space-y-1">
-          <InputField id="f1Num" value={fraction1.num} onChange={(val) => onFractionChange('f1', 'num', val)} label="Numerator (a)" error={errors.f1Num} placeholder="a"/>
-          <div className={`w-16 h-0.5 bg-[${TEXT_COLOR_DARK}] my-1`}></div>
-          <InputField id="f1Den" value={fraction1.den} onChange={(val) => onFractionChange('f1', 'den', val)} label="Denominator (b)" error={errors.f1Den} placeholder="b"/>
-        </div>
-
-        {/* Operator */}
-        <div className="flex items-center h-full pt-16">
+      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-x-3 gap-y-1">
+        {/* Row 1: Numerator Inputs */}
+        <label htmlFor="f1Num" className={`text-sm font-medium text-[${TEXT_COLOR_DARK}] justify-self-end pr-2`}>Numerator</label>
+        <InputField 
+          id="f1Num" 
+          value={fraction1.num} 
+          onChange={(val) => onFractionChange('f1', 'num', val)} 
+          error={errors.f1Num} 
+          placeholder="a"
+          ariaLabel="Numerator for first fraction (a)"
+        />
+        
+        {/* This cell contains the '+' sign, spanning 3 rows vertically (Num, Line, Den) */}
+        <div className="row-span-3 flex items-center justify-center px-2">
           <span className={`text-4xl font-bold text-[${TEXT_COLOR_DARK}]`}>+</span>
         </div>
 
-        {/* Fraction 2 */}
-        <div className="flex flex-col items-center space-y-1">
-          <InputField id="f2Num" value={fraction2.num} onChange={(val) => onFractionChange('f2', 'num', val)} label="Numerator (x)" error={errors.f2Num} placeholder="x"/>
-          <div className={`w-16 h-0.5 bg-[${TEXT_COLOR_DARK}] my-1`}></div>
-          <InputField id="f2Den" value={fraction2.den} onChange={(val) => onFractionChange('f2', 'den', val)} label="Denominator (y)" error={errors.f2Den} placeholder="y"/>
-        </div>
-      </div>
+        <InputField 
+          id="f2Num" 
+          value={fraction2.num} 
+          onChange={(val) => onFractionChange('f2', 'num', val)} 
+          error={errors.f2Num} 
+          placeholder="x"
+          ariaLabel="Numerator for second fraction (x)"
+        />
 
-      <div className="mt-8 flex justify-center space-x-4">
-        <button
-          onClick={onSubmit}
-          disabled={isCalculating}
-          className="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 disabled:opacity-50 transition-colors"
-        >
-          {isCalculating ? 'Calculating...' : 'Visualize Sum'}
-        </button>
-        <button
-          onClick={onReset}
-          disabled={isCalculating}
-          className="px-6 py-2 bg-gray-200 text-gray-700 font-semibold rounded-lg shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 disabled:opacity-50 transition-colors"
-        >
-          Reset
-        </button>
+        {/* Row 2: Fraction Lines (empty cell for label alignment) */}
+        <div aria-hidden="true"></div> 
+        <div className={`w-full h-0.5 bg-[${TEXT_COLOR_DARK}] my-1 mx-auto max-w-[5rem]`}></div> {/* Line for f1, max-w-xs ensures it's under input */}
+        {/* Operator is in the middle column, already placed and spanning */}
+        <div className={`w-full h-0.5 bg-[${TEXT_COLOR_DARK}] my-1 mx-auto max-w-[5rem]`}></div> {/* Line for f2, max-w-xs */}
+        
+        {/* Row 3: Denominator Inputs */}
+        <label htmlFor="f1Den" className={`text-sm font-medium text-[${TEXT_COLOR_DARK}] justify-self-end pr-2`}>Denominator</label>
+        <InputField 
+          id="f1Den" 
+          value={fraction1.den} 
+          onChange={(val) => onFractionChange('f1', 'den', val)} 
+          error={errors.f1Den} 
+          placeholder="b"
+          ariaLabel="Denominator for first fraction (b)"
+        />
+        {/* Operator is in the middle column, already placed and spanning */}
+        <InputField 
+          id="f2Den" 
+          value={fraction2.den} 
+          onChange={(val) => onFractionChange('f2', 'den', val)} 
+          error={errors.f2Den} 
+          placeholder="y"
+          ariaLabel="Denominator for second fraction (y)"
+        />
       </div>
     </div>
   );
