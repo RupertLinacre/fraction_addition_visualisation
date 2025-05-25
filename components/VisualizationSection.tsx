@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import FractionVisual from './FractionVisual';
 import type { CalculationData, ShadingSegment, FractionVisualProps } from '../types';
@@ -7,8 +6,12 @@ import KatexDisplay from './KatexDisplay';
 
 const DIAGONAL_SIDE = Math.hypot(SQUARE_SIDE, SQUARE_SIDE);
 
-const OperatorDisplay: React.FC<{ symbol: string }> = ({ symbol }) => (
-  <div className={`flex items-center justify-center px-1 sm:px-2`} style={{ height: `${DIAGONAL_SIDE}px` }}>
+const OperatorDisplay: React.FC<{ symbol: string; isPlaceholder?: boolean }> = ({ symbol, isPlaceholder = false }) => (
+  <div
+    className={`flex items-center justify-center px-1 sm:px-2`}
+    style={{ height: `${DIAGONAL_SIDE}px`, visibility: isPlaceholder ? 'hidden' : 'visible' }}
+    aria-hidden={isPlaceholder}
+  >
     <KatexDisplay latex={symbol} className={`text-3xl sm:text-5xl font-bold text-[${TEXT_COLOR_DARK}]`} />
   </div>
 );
@@ -184,21 +187,21 @@ export const VisualizationSection: React.FC<VisualizationSectionProps> = ({ calc
             topLabelLatex={fracToLatex(f2.num, f2.den)}
             visualProps={f2aVisualProps}
           />
-          <OperatorDisplay symbol="=" />
+          <OperatorDisplay symbol="=" isPlaceholder={true} />
           <VisualUnit isPlaceholder={true} visualProps={{ idSuffix: "sumplaceholder-top", cols: 1, rows: 1, shadingSegments: [] }} />
         </div>
 
         {/* Bottom Row of Visuals - Transformed Fractions and Sum */}
         <div className="flex flex-row items-center justify-center w-auto gap-x-4 sm:gap-x-8">
           <VisualUnit
-            topLabelLatex={`\\frac{${f1.num} \\times ${f2.den}}{${f1.den} \\times ${f2.den}} = ${fracToLatex(f1TransformedNum, commonDenominator)}`}
+            topLabelLatex={fracToLatex(f1TransformedNum, commonDenominator)}
             visualProps={f1bVisualProps}
             onRotate={() => setRotationF1(prev => (prev === 0 ? 90 : 0))}
             isRotated={rotationF1 === 90}
           />
           <OperatorDisplay symbol="+" />
           <VisualUnit
-            topLabelLatex={`\\frac{${f2.num} \\times ${f1.den}}{${f2.den} \\times ${f1.den}} = ${fracToLatex(f2TransformedNum, commonDenominator)}`}
+            topLabelLatex={fracToLatex(f2TransformedNum, commonDenominator)}
             visualProps={f2bVisualProps}
             onRotate={() => setRotationF2(prev => (prev === 0 ? 90 : 0))}
             isRotated={rotationF2 === 90}
