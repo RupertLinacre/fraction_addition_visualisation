@@ -131,14 +131,14 @@ export const VisualizationSection: React.FC<VisualizationSectionProps> = ({ calc
     idSuffix: "f1a",
     cols: f1.den, rows: 1,
     shadingSegments: [{ count: f1.num, color: FRACTION1_COLOR, id: "f1init" }],
-    isColumnBasedShading: true, showCellNumbers: true, rotationAngle: 0,
+    isColumnBasedShading: true, showCellNumbers: true, rotationAngle: rotationF1,
     numberingOrder: 'ttb-ltr', cellNumberingDenominator: f1.den,
   };
   const f2aVisualProps: VisualUnitProps['visualProps'] = {
     idSuffix: "f2a",
     cols: f2.den, rows: 1,
     shadingSegments: [{ count: f2.num, color: FRACTION2_COLOR, id: "f2init" }],
-    isColumnBasedShading: true, showCellNumbers: true, rotationAngle: 0,
+    isColumnBasedShading: true, showCellNumbers: true, rotationAngle: rotationF2,
     numberingOrder: 'ttb-ltr', cellNumberingDenominator: f2.den,
   };
 
@@ -181,11 +181,15 @@ export const VisualizationSection: React.FC<VisualizationSectionProps> = ({ calc
           <VisualUnit
             topLabelLatex={fracToLatex(f1.num, f1.den)}
             visualProps={f1aVisualProps}
+            onRotate={() => setRotationF1(prev => (prev === 0 ? 90 : 0))}
+            isRotated={rotationF1 === 90}
           />
           <OperatorDisplay symbol="+" />
           <VisualUnit
             topLabelLatex={fracToLatex(f2.num, f2.den)}
             visualProps={f2aVisualProps}
+            onRotate={() => setRotationF2(prev => (prev === 0 ? 90 : 0))}
+            isRotated={rotationF2 === 90}
           />
           <OperatorDisplay symbol="=" isPlaceholder={true} />
           <VisualUnit isPlaceholder={true} visualProps={{ idSuffix: "sumplaceholder-top", cols: 1, rows: 1, shadingSegments: [] }} />
