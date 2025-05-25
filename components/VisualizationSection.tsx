@@ -64,7 +64,7 @@ const VisualUnit: React.FC<VisualUnitProps> = ({
       aria-hidden={isPlaceholder}
     >
       <div
-        className={`text-center text-base sm:text-lg font-semibold text-[${TEXT_COLOR_DARK}] flex items-center justify-center w-full`}
+        className={`text-center text-3xl sm:text-5xl font-semibold text-[${TEXT_COLOR_DARK}] flex items-center justify-center w-full`}
         style={{ height: fixedLabelHeight }}
       >
         {topLabelLatex && <KatexDisplay latex={topLabelLatex} />}
@@ -90,7 +90,7 @@ const VisualUnit: React.FC<VisualUnitProps> = ({
       </div>
 
       <div
-        className={`text-center text-base sm:text-lg font-semibold text-[${TEXT_COLOR_DARK}] flex items-center justify-center w-full`}
+        className={`text-center text-3xl sm:text-5xl font-semibold text-[${TEXT_COLOR_DARK}] flex items-center justify-center w-full`}
         style={{ height: fixedLabelHeight }}
       >
         {bottomLabelLatex && <KatexDisplay latex={bottomLabelLatex} />}
