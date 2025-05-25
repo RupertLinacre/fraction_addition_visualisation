@@ -63,12 +63,14 @@ const VisualUnit: React.FC<VisualUnitProps> = ({
       style={{ minWidth: `${DIAGONAL_SIDE}px`, visibility: unitVisibilityStyle }}
       aria-hidden={isPlaceholder}
     >
-      <div
-        className={`text-center text-3xl sm:text-5xl font-semibold text-[${TEXT_COLOR_DARK}] flex items-center justify-center w-full`}
-        style={{ height: fixedLabelHeight }}
-      >
-        {topLabelLatex && <KatexDisplay latex={topLabelLatex} />}
-      </div>
+      {topLabelLatex && (
+        <div
+          className={`text-center text-3xl sm:text-5xl font-semibold text-[${TEXT_COLOR_DARK}] flex items-center justify-center w-full`}
+          style={{ height: fixedLabelHeight }}
+        >
+          <KatexDisplay latex={topLabelLatex} />
+        </div>
+      )}
 
       <div className={visualFixedSizeContainerClasses} style={visualFixedSizeContainerStyle}>
         {!isPlaceholder && (
@@ -80,21 +82,23 @@ const VisualUnit: React.FC<VisualUnitProps> = ({
         )}
       </div>
 
-      <div
-        className="flex items-center justify-center w-full"
-        style={{ height: fixedRotateButtonSlotHeight }}
-      >
-        {onRotate && typeof isRotated !== 'undefined' && !isPlaceholder && (
+      {onRotate && typeof isRotated !== 'undefined' && !isPlaceholder && (
+        <div
+          className="flex items-center justify-center w-full"
+          style={{ height: fixedRotateButtonSlotHeight }}
+        >
           <RotateButton onClick={onRotate} isRotated={isRotated} />
-        )}
-      </div>
+        </div>
+      )}
 
-      <div
-        className={`text-center text-3xl sm:text-5xl font-semibold text-[${TEXT_COLOR_DARK}] flex items-center justify-center w-full`}
-        style={{ height: fixedLabelHeight }}
-      >
-        {bottomLabelLatex && <KatexDisplay latex={bottomLabelLatex} />}
-      </div>
+      {bottomLabelLatex && (
+        <div
+          className={`text-center text-3xl sm:text-5xl font-semibold text-[${TEXT_COLOR_DARK}] flex items-center justify-center w-full`}
+          style={{ height: fixedLabelHeight }}
+        >
+          <KatexDisplay latex={bottomLabelLatex} />
+        </div>
+      )}
     </div>
   );
 };
