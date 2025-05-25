@@ -16,6 +16,7 @@ export const MathematicalSummary: React.FC<MathematicalSummaryProps> = ({ calcDa
 
   const steps = [
     `\\frac{${f1.num}}{${f1.den}} + \\frac{${f2.num}}{${f2.den}}`,
+    `= \\frac{${f1.num} \\times ${f2.den}}{${f1.den} \\times ${f2.den}} + \\frac{${f2.num} \\times ${f1.den}}{${f2.den} \\times ${f1.den}}`,
     `= \\frac{${f1TransformedNum}}{${commonDenominator}} + \\frac{${f2TransformedNum}}{${commonDenominator}}`,
     `= \\frac{${f1TransformedNum} + ${f2TransformedNum}}{${commonDenominator}}`,
     `= \\frac{${sumNum}}{${commonDenominator}}`
