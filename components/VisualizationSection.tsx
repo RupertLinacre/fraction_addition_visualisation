@@ -42,6 +42,7 @@ interface VisualUnitProps {
   isRotated?: boolean;
   bottomLabelLatex?: string;
   isPlaceholder?: boolean;
+  forceEmptyRotateSlotForAlignment?: boolean; // <<< ADD THIS LINE
 }
 
 const VisualUnit: React.FC<VisualUnitProps> = ({
@@ -51,11 +52,15 @@ const VisualUnit: React.FC<VisualUnitProps> = ({
   isRotated,
   bottomLabelLatex,
   isPlaceholder = false,
+  forceEmptyRotateSlotForAlignment = false, // <<< ADD THIS LINE (with default)
 }) => {
   const unitVisibilityStyle: React.CSSProperties['visibility'] = isPlaceholder ? 'hidden' : 'visible';
 
   const fixedLabelHeight = '4rem';
   const fixedRotateButtonSlotHeight = '2.5rem';
+
+  const actualShowRotateButton = onRotate && typeof isRotated !== 'undefined' && !isPlaceholder;
+  const renderRotateSlotDiv = actualShowRotateButton || (forceEmptyRotateSlotForAlignment && !isPlaceholder);
 
   return (
     <div
@@ -82,12 +87,14 @@ const VisualUnit: React.FC<VisualUnitProps> = ({
         )}
       </div>
 
-      {onRotate && typeof isRotated !== 'undefined' && !isPlaceholder && (
+      {renderRotateSlotDiv && (
         <div
           className="flex items-center justify-center w-full"
           style={{ height: fixedRotateButtonSlotHeight }}
         >
-          <RotateButton onClick={onRotate} isRotated={isRotated} />
+          {actualShowRotateButton && (
+            <RotateButton onClick={onRotate} isRotated={isRotated} />
+          )}
         </div>
       )}
 
@@ -200,6 +207,7 @@ export const VisualizationSection: React.FC<VisualizationSectionProps> = ({ calc
           <VisualUnit
             topLabelLatex={fracToLatex(sumNum, commonDenominator)}
             visualProps={sumVisualProps}
+            forceEmptyRotateSlotForAlignment={true}
           />
         </div>
       </div>
