@@ -39,20 +39,20 @@ const visualFixedSizeContainerClasses = "flex items-center justify-center";
 const labelTextClasses = `text-center text-lg font-semibold text-[${TEXT_COLOR_DARK}] flex items-center justify-center py-1`; // min-h to ensure consistent height
 
 interface VisualUnitProps {
-  topLabelLatex?: string;
+  labelAboveSquareLatex?: string;
   visualProps: Omit<FractionVisualProps, 'baseWidth' | 'baseHeight'> & Partial<Pick<FractionVisualProps, 'baseWidth' | 'baseHeight'>>;
   onRotate?: () => void;
   isRotated?: boolean;
-  bottomLabelLatex?: string;
+  labelBelowSquareLatex?: string;
   isPlaceholder?: boolean;
 }
 
 const VisualUnit: React.FC<VisualUnitProps> = ({
-  topLabelLatex,
+  labelAboveSquareLatex,
   visualProps,
   onRotate,
   isRotated,
-  bottomLabelLatex,
+  labelBelowSquareLatex,
   isPlaceholder = false,
 }) => {
   // Fix: Changed "invisible" to "hidden" for CSS visibility property.
@@ -67,7 +67,7 @@ const VisualUnit: React.FC<VisualUnitProps> = ({
       aria-hidden={isPlaceholder}
     >
       <div className={`text-center text-lg font-semibold text-[${TEXT_COLOR_DARK}] flex items-center justify-center py-1`}>
-        {topLabelLatex && <KatexDisplay latex={topLabelLatex} />}
+        {labelAboveSquareLatex && <KatexDisplay latex={labelAboveSquareLatex} />}
       </div>
 
       <div className={visualFixedSizeContainerClasses} style={visualFixedSizeContainerStyle}>
@@ -80,15 +80,15 @@ const VisualUnit: React.FC<VisualUnitProps> = ({
         )}
       </div>
 
+      <div className={`text-center text-lg font-semibold text-[${TEXT_COLOR_DARK}] flex items-center justify-center py-1`}>
+        {labelBelowSquareLatex && <KatexDisplay latex={labelBelowSquareLatex} />}
+      </div>
+
       {/* Container for rotate button or spacer */}
       <div className="flex items-center justify-center py-1">
         {onRotate && typeof isRotated !== 'undefined' && !isPlaceholder && (
           <RotateButton onClick={onRotate} isRotated={isRotated} />
         )}
-      </div>
-
-      <div className={`text-center text-lg font-semibold text-[${TEXT_COLOR_DARK}] flex items-center justify-center py-1`}>
-        {bottomLabelLatex && <KatexDisplay latex={bottomLabelLatex} />}
       </div>
     </div>
   );
@@ -161,12 +161,14 @@ export const VisualizationSection: React.FC<VisualizationSectionProps> = ({ calc
         {/* Top Row of Visuals */}
         <div className="flex flex-row items-center justify-center w-auto mx-auto">
           <VisualUnit
-            topLabelLatex={fracToLatex(f1.num, f1.den)}
+            labelAboveSquareLatex={fracToLatex(f1.num, f1.den)}
+            labelBelowSquareLatex=""
             visualProps={f1aVisualProps}
           />
           <OperatorDisplay symbol="+" />
           <VisualUnit
-            topLabelLatex={fracToLatex(f2.num, f2.den)}
+            labelAboveSquareLatex={fracToLatex(f2.num, f2.den)}
+            labelBelowSquareLatex=""
             visualProps={f2aVisualProps}
           />
           <OperatorDisplay symbol="=" />
@@ -176,23 +178,26 @@ export const VisualizationSection: React.FC<VisualizationSectionProps> = ({ calc
         {/* Bottom Row of Visuals */}
         <div className="flex flex-row items-center justify-center w-auto mx-auto">
           <VisualUnit
+            labelAboveSquareLatex={`\\frac{${f1.num} \\times ${f2.den}}{${f1.den} \\times ${f2.den}} = ${fracToLatex(f1TransformedNum, commonDenominator)}`}
+            labelBelowSquareLatex=""
             visualProps={f1bVisualProps}
             onRotate={() => setRotationF1(prev => (prev === 0 ? 90 : 0))}
             isRotated={rotationF1 === 90}
-            bottomLabelLatex={`\\frac{${f1.num} \\times ${f2.den}}{${f1.den} \\times ${f2.den}} = ${fracToLatex(f1TransformedNum, commonDenominator)}`}
           />
           <OperatorDisplay symbol="+" />
           <VisualUnit
+            labelAboveSquareLatex={`\\frac{${f2.num} \\times ${f1.den}}{${f2.den} \\times ${f1.den}} = ${fracToLatex(f2TransformedNum, commonDenominator)}`}
+            labelBelowSquareLatex=""
             visualProps={f2bVisualProps}
             onRotate={() => setRotationF2(prev => (prev === 0 ? 90 : 0))}
             isRotated={rotationF2 === 90}
-            bottomLabelLatex={`\\frac{${f2.num} \\times ${f1.den}}{${f2.den} \\times ${f1.den}} = ${fracToLatex(f2TransformedNum, commonDenominator)}`}
           />
           <OperatorDisplay symbol="=" />
           <VisualUnit
+            labelAboveSquareLatex=""
+            labelBelowSquareLatex={fracToLatex(sumNum, commonDenominator)}
             visualProps={sumVisualProps}
-            // Sum has its label at the bottom to align with transformed fractions' bottom labels
-            bottomLabelLatex={fracToLatex(sumNum, commonDenominator)}
+          // Sum has its label at the bottom to align with transformed fractions' bottom labels
           />
         </div>
       </div>
